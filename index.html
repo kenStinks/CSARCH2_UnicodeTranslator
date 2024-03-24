@@ -10,54 +10,59 @@
 </head>
 <body>
     <div class="content">
-        <h1>Unicode Translator 😀</h1>
-        <hr>
+        <div>
+            <h1>Unicode Translator 😀</h1>
+            <hr>
+            
+        </div>
+
         <div class="translation_container_2">
             <div class="translation_container">
                 <div class="translation_box">
-                    <h2>Input</h2>
+                    
                     <select name="input_type" id="input_type">
-                        <option value="unicode">Unicode</option>
-                        <option value="utf_8">UTF-8</option>
-                        <option value="utf_16">UTF-16</option>
-                        <option value="utf_32">UTF-32</option>
-                    </select>
-    
-                    <textarea id="input_text"></textarea>
-                </div>
-    
-                <span class="arrow">→</span>
-    
-                <div class="translation_box">
-                    <h2>Output</h2>
-                    <select name="output_type" id="output_type">
-                        <option value="unicode">Unicode</option>
+                        <option value="unicode" selected="selected">Unicode</option>
                         <option value="utf_8">UTF-8</option>
                         <option value="utf_16">UTF-16</option>
                         <option value="utf_32">UTF-32</option>
                     </select>
                     
-                    <textarea id="output_text" disabled></textarea>
+                    <input type="text" id="input_text" value="blah blah blah">
+                </div>
+    
+                <span class="arrow">→</span>
+    
+                <div class="translation_box">
+                   
+                    <select name="output_type" id="output_type">
+                        <option value="unicode">Unicode</option>
+                        <option value="utf_8" selected="selected">UTF-8</option>
+                        <option value="utf_16">UTF-16</option>
+                        <option value="utf_32">UTF-32</option>
+                    </select>
+                    
+                    <input type="text" id="output_text" disabled value="stuff stuff stuff">
                 </div>
     
             </div>
 
             <div class="button_container">
-                <button id="translate_button">Translate</button>
-                <button id="export_button">Save as .txt</button>
+                <button class="button_secondary" id="export_button">Save as .txt</button>
+                <button class="button_primary" id="translate_button">Translate</button>
             </div>
         </div>
         
+        <div>
+            <h2>Steps</h2>
+            <hr>
+        </div>
 
-        
-        
-
-        <h2>Steps</h2>
-        <hr>
         <ol id="step_list">
             <li>Blah blah blah...</li>
             <li>Stuff stuff stuff...</li>
         </ol>
+
+        <h6>CSARCH2 XX22 Group 1 © 2024</h6>
     </div>
     
     <script type="module" src="public/script.js"></script>

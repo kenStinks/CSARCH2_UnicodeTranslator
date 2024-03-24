@@ -5,47 +5,172 @@
     font-family: "Roboto", sans-serif;
 }
 
+body{
+    background-size: 40px 40px;
+    background-image:
+    linear-gradient(to right, transparent, grey 1px, transparent 1px, transparent ),
+    linear-gradient(to bottom, transparent,grey 1px, transparent 1px, transparent);
+    
+    
+
+    margin: 0;
+}
+
+select{
+    font-weight: 600;
+    font-size: 16px;
+
+    padding: 4px;
+
+    outline: none;
+    border: none;
+
+    background-color: black;
+    color: white;
+    border-bottom: 1px solid black;
+
+    cursor: pointer;
+}
+
+option{
+    outline: none;
+    border: none;
+    background-color: white;
+    color: black;
+    padding: 5px;
+
+    cursor: pointer;
+}
+
+input{
+    display: flex;
+    width: auto;
+    font-family: inherit;
+    resize: none;
+
+    background-color: transparent;
+    outline: none;
+    border: none;
+
+    padding: 4px 8px;
+    font-size: 20px;
+}
+
 h1, h2{
     font-family: "Abril Fatface", serif;
     font-weight: 400;
+    margin: 5px 0;
+}
+
+h6{
+    position: relative;
+    font-weight: 400;
+    font-size: 14px;
+    text-align: center;
+    margin: 0;
+    margin-top: 40px;
+
+    color: rgb(44, 44, 44);
+    letter-spacing: 1px;
+}
+
+ol{
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    gap: 10px;
+
+    font-size: 20px;
+}
+
+hr{
+    margin: 0;
 }
 
 .content{
-    width: 500px;
-    margin-left: auto;
-    margin-right: auto;
+    width: fit-content;
+    margin: auto auto auto auto;
     outline: black solid 1px;
+    border-radius: 0 0 10px 10px;
+    background-color: white;
+    padding: 30px 50px 10px 50px;
 
-    padding: 10px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+
+    box-shadow: 
+    10px 10px 0 10px rgb(116, 116, 116),
+    10px 10px 0 11px rgb(0, 0, 0)
+    ;
+
 }
 
 .translation_container{
     display: flex;
     align-items: center;
     gap: 10px;
-    width: fit-content;
+    width: 100%;
 }
 
 .translation_container_2{
     display: flex;
     flex-direction: column;
-    align-items: start;
+    align-items: end;
     gap: 20px;
-    width: fit-content;
+    width: 100%;
 }
 
 .translation_box{
     display: flex;
     flex-direction: column;
+    gap: 2px;
+    width: 100%;
+
+    border-radius: 5px;
+    overflow: hidden;
+
+    outline: black solid 1px;
 }
 
 .arrow{
     position: relative;
-    top: 40px;
+    bottom:-8px;
 }
 
 .button_container{
     display: flex;
     gap: 5px;
     width: fit-content;
+}
+
+.button_primary{
+    background-color: white;
+    outline: none;
+    border: black solid 1px;
+    padding: 2px 8px;
+    font-size: 16px;
+    border-radius: 2px;
+
+    cursor: pointer;
+}
+
+.button_primary:active{
+    background-color: rgb(213, 213, 213);
+    
+}
+
+.button_secondary{
+    background-color: transparent;
+    outline: none;
+    border: none;
+    text-decoration: underline;
+
+    cursor: pointer;
+    
+}
+
+.button_secondary:active{
+    color: rgb(93, 58, 136);
+    
 }
