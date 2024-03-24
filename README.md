@@ -1,1 +1,1 @@
-# CSARCH2_UnicodeTranslator
+# CSARCH2: Unicode Translator

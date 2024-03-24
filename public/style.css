@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+:root{
+    font-family: "Roboto", sans-serif;
+}
+
+.content{
+    width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    outline: black solid 1px;
+
+    padding: 10px 40px;
+}
+
+.translation_container{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.translation_box{
+    display: flex;
+    flex-direction: column;
+}
+
+.arrow{
+    position: relative;
+    top: 40px;
+}

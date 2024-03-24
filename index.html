@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="public/style.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <title>Unicode Translator</title>
+</head>
+<body>
+    <div class="content">
+        <h1>Unicode Translator 😀</h1>
+        <hr>
+
+        <div class="translation_container">
+            <div class="translation_box">
+                <h2>Input</h2>
+                <select name="input_type" id="input_type">
+                    <option value="unicode">Unicode</option>
+                    <option value="utf_8">UTF-8</option>
+                    <option value="utf_16">UTF-16</option>
+                    <option value="utf_32">UTF-32</option>
+                </select>
+
+                <textarea id="input_text"></textarea>
+            </div>
+
+            <span class="arrow">→</span>
+
+            <div class="translation_box">
+                <h2>Output</h2>
+                <select name="output_type" id="output_type">
+                    <option value="unicode">Unicode</option>
+                    <option value="utf_8">UTF-8</option>
+                    <option value="utf_16">UTF-16</option>
+                    <option value="utf_32">UTF-32</option>
+                </select>
+                
+                <textarea id="output_text"></textarea>
+            </div>
+
+        </div>
+
+        <h2>Steps</h2>
+        <hr>
+        <ol>
+            <li>Blah blah blah...</li>
+            <li>Stuff stuff stuff...</li>
+        </ol>
+    </div>
+    
+    <script type="module" src="public/script.js"></script>
+</body>
+</html>
