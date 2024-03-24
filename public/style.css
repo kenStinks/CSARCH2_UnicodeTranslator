@@ -1,7 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap');
 
 :root{
     font-family: "Roboto", sans-serif;
+}
+
+h1, h2{
+    font-family: "Abril Fatface", serif;
+    font-weight: 400;
 }
 
 .content{
@@ -17,6 +23,15 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    width: fit-content;
+}
+
+.translation_container_2{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 20px;
+    width: fit-content;
 }
 
 .translation_box{
@@ -27,4 +42,10 @@
 .arrow{
     position: relative;
     top: 40px;
+}
+
+.button_container{
+    display: flex;
+    gap: 5px;
+    width: fit-content;
 }
