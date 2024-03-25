@@ -113,6 +113,7 @@ function convert(unicode, utf_type){
         return "Invalid Input";
     }
 
+    while(unicode.length%2 != 0)unicode = "0" + unicode; //this is just aesthetics
     unicode = unicode.toUpperCase(); //make unicode string uppercase
 
     clear_steps();
@@ -151,131 +152,72 @@ function hex_to_dec(x){
 //functions for converting Unicode to UTF
 function utf8(unicode){
     //convert unicode to utf8
-    //parse to hex
     
-    //convert to packed bcd
+    //convert to decimal
     const decimal = hex_to_dec(unicode);
-    const binary = dec_to_bin(decimal);
 
-    console.log("decimal: "+decimal+" | packed bcd: " + binary);
-    print_step(`Convert to binary: ${dec_to_bin(decimal)}`);
-
-    var binary1, binary2, binary3, binary4, result, hex;
-    switch (true){
-        case decimal <= 0x007F:
-            hex = dec_to_hex(decimal)
-            
-            
-            print_step(`0000 <= ${unicode} <= 007F : needs 1 byte`);
-
-            //leave it as is.
-            print_step(`Byte 1: 0xxx xxxx → ${dec_to_bin(decimal)}`);
-            print_step(`Convert back to hex: ${hex}`);
-            return hex;
-
-        case decimal <= 0x07FF:
-            print_step(`0080 <= ${unicode} <= 07FF : needs 2 bytes`);
-
-            //needs 2 bytes
-            binary1 = 0b11000000;
-            binary2 = 0b10000000;
-            
-            //binary2 gets lower 6 bits
-            console.log(dec_to_bin(decimal & 0b111111));
-            binary2 += decimal & 0b111111;
-
-            //binary1 gets upper 5 bits
-            console.log(dec_to_bin(decimal >> 6 & 0b11111));
-            binary1 += decimal >> 6 & 0b11111;
-
-            print_step(`Byte 1: 110x xxxx → ${dec_to_bin(binary1)}`);
-            print_step(`Byte 2: 10xx xxxx → ${dec_to_bin(binary2)}`);
-
-            //combine bytes
-            result = (binary1 << 8) + binary2;
-            print_step(`Full: ${dec_to_bin(result)}`);
-            
-            //convert binary to hex
-            hex = dec_to_hex(result)
-            print_step(`Convert back to hex: ${hex}`);
-            return hex;
-
-        case decimal <= 0xFFFF:
-            print_step(`0800 <= ${unicode} <= FFFF : needs 3 bytes`);
-
-            //needs 3 bytes
-            binary1 = 0b11100000;
-            binary2 = 0b10000000;
-            binary3 = 0b10000000;
-
-            //binary3 gets lower 6 bits
-            console.log(dec_to_bin(decimal & 0b111111));
-            binary3 += decimal & 0b111111;
-
-            //binary2 gets middle 6 bits
-            console.log(dec_to_bin(decimal >> 6 & 0b111111));
-            binary2 += decimal >> 6 & 0b111111;
-
-            //binary1 gets upper 4 bits
-            console.log(dec_to_bin(decimal >> 12 & 0b1111));
-            binary1 += decimal >> 12 & 0b1111;
-
-            print_step(`Byte 1: 1110xxxx → ${dec_to_bin(binary1)}`);
-            print_step(`Byte 2: 10xxxxxx → ${dec_to_bin(binary2)}`);
-            print_step(`Byte 3: 10xxxxxx → ${dec_to_bin(binary3)}`);
-
-            //combine bytes
-            result = (binary1 << 16) + (binary2 << 8) + binary3;
-            print_step(`Full: ${dec_to_bin(result)}`);
-
-            //convert binary to hex
-            hex = dec_to_hex(result);
-            print_step(`Convert back to hex: ${hex}`);
-            return hex;
-
-        case decimal <= 0x10FFFF:
-            print_step(`010000 <= ${unicode} <= 10FFFF : needs 4 bytes`);
-
-            //needs 4 bytes
-            binary1 = 0b11110000;
-            binary2 = 0b10000000;
-            binary3 = 0b10000000;
-            binary4 = 0b10000000;
-            
-            //binary3 gets lower 6 bits
-            console.log(dec_to_bin(decimal & 0b111111));
-            binary4 += decimal & 0b111111;
-
-            //binary2 gets middle 6 bits
-            console.log(dec_to_bin(decimal >> 6 & 0b111111));
-            binary3 += decimal >> 6 & 0b111111;
-
-            //binary1 gets upper 4 bits
-            console.log(dec_to_bin(decimal >> 12 & 0b111111));
-            binary2 += decimal >> 12 & 0b111111;
-
-            //binary1 gets upper 3 bits
-            console.log(dec_to_bin(decimal >> 18 & 0b111));
-            binary1 += decimal >> 18 & 0b111;
-
-            print_step(`Byte 1: 11110xxx → ${dec_to_bin(binary1)}`);
-            print_step(`Byte 2: 10xxxxxx → ${dec_to_bin(binary2)}`);
-            print_step(`Byte 3: 10xxxxxx → ${dec_to_bin(binary3)}`);
-            print_step(`Byte 4: 10xxxxxx → ${dec_to_bin(binary4)}`);
-
-            //combine bytes
-            result = dec_to_bin(binary1) +' '+ dec_to_bin(binary2) +' '+ dec_to_bin(binary3) +' '+ dec_to_bin(binary4);
-            print_step(`Full: ${result}`);
-
-            //convert binary to hex
-            hex = dec_to_hex(binary1) + dec_to_hex(binary2) + dec_to_hex(binary3)  + dec_to_hex(binary4);
-            print_step(`Convert back to hex: ${hex}`);
-            return hex;
-        default:
-            return "Invalid Input";
-        
-    }
+    console.log("decimal: "+decimal+" | packed bcd: " + dec_to_bin(decimal));
     
+    //Determine if within range.
+    if(decimal > 0x10FFFF) return "Invalid Input";
+
+    //if 1 byte is needed, leave as is.
+    if (decimal <= 0x007F){
+        print_step(`0000 <= ${unicode} <= 007F : needs 1 byte`);
+        print_step(`Convert to binary → ${dec_to_bin(decimal)}`);
+
+        var hex = hex = dec_to_hex(decimal)
+        print_step(`Byte 1: 0xxx xxxx → ${dec_to_bin(decimal)}`);
+        print_step(`Convert back to hex: ${hex}`);
+
+        return hex;
+    };
+
+    var n=0;
+    if(decimal <= 0x07FF){
+        print_step(`0080 <= ${unicode} <= 07FF : needs 2 bytes`);
+        n=2;
+    } else if(decimal <= 0xFFFF) {
+        print_step(`0800 <= ${unicode} <= FFFF : needs 3 bytes`);
+        n=3
+    } else {
+        print_step(`010000 <= ${unicode} <= 10FFFF : needs 4 bytes`);
+        n=4
+    }
+
+    print_step(`Convert to binary → ${dec_to_bin(decimal)}`);
+    
+    var hex = ''
+    var res = ''
+    var first_byte = 1;
+
+    //compute trailing bytes
+    for(let i=0; i<n-1; i++){
+        var binary = 0b10000000;
+        binary += decimal>>(6*i) & 0b111111
+        
+        res = dec_to_bin(binary)+" "+ res;
+        hex = dec_to_hex(binary)+" "+ hex;
+
+        print_step(`Byte ${n-i}: 10xx xxxx → ${dec_to_bin(binary)}`);
+        first_byte = (first_byte << 1) + 1
+    }
+
+    //then the first byte
+    byte_mask = (first_byte<<1).toString(2);
+    while(byte_mask.length < 4) byte_mask+='x';
+
+    first_byte <<= 8-n;
+    first_byte += first_byte>>(6*(n-1));
+    print_step(`Byte 1: ${byte_mask} xxxx → ${dec_to_bin(first_byte)}`);
+
+    res = dec_to_bin(first_byte)+" "+ res;
+    hex = dec_to_hex(first_byte)+" "+ hex;
+
+    print_step(`Full: ${res}`);
+    print_step(`Convert back to hex → ${hex}`);
+    
+    return hex;
 }
 
 function utf16(unicode){
