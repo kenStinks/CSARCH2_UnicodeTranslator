@@ -99,7 +99,7 @@ function print_step(str){
 function convert(unicode, utf_type){
     //check if input is valid
     unicode = unicode.replace(/\s/g, '');
-    let regex = /^[0-9a-f]+$/i; //ensures hex input
+    const regex = /^[0-9a-f]+$/i; //ensures hex input
 
     if(!regex.test(unicode)){
         clear_steps();
@@ -107,7 +107,7 @@ function convert(unicode, utf_type){
     }
 
     //tests if unicode is in valid range
-    let decimal = parseInt(unicode, 16);
+    const decimal = parseInt(unicode, 16);
     if(decimal < 0 || decimal > 0x10FFFF){
         clear_steps();
         return "Invalid Input";
@@ -133,9 +133,110 @@ function convert(unicode, utf_type){
 //functions for converting Unicode to UTF
 function utf8(unicode){
     //convert unicode to utf8
-    unicode = "utf8 Not implemented yet!"
+    //parse to hex
+    
+    //convert to packed bcd
+    const decimal = parseInt(unicode, 16);
+    const binary = decimal.toString(2);
 
-    return unicode;
+    console.log("packed bcd: " + binary);
+    print_step("Convert to binary: " + binary.split("").reverse().join("").match(/.{1,4}/g).join(' ').split("").reverse().join("")); //this is my cursed way of splitting the binary into 4s
+
+    var binary1= '', binary2= '', binary3= '', binary4= '';
+    var result = '';
+    switch (true){
+        case decimal <= 0x007F:
+            binary1 = '0';
+            binary1 += decimal.toString(2).padStart(7, '0');
+            print_step(`${binary1.split("").reverse().join("").match(/.{1,4}/g).join(' ').split("").reverse().join("")} (needs 1 byte)`)
+            
+            //convert binary to hex
+            const hex = parseInt(binary1, 2).toString(16).toUpperCase();
+            print_step(`Byte 1: 0xxxxxxx → ${binary1}`);
+            print_step(`Convert back to hex: ${hex.padStart(2, '0')}`);
+            return hex;
+
+        case decimal <= 0x07FF:
+            //needs 2 bytes
+            binary1 = '110';
+            binary2 = '10';
+            
+
+            //binary2 gets lower 6 bits
+            binary2 += decimal.toString(2).slice(-6).padStart(6, '0');
+
+            binary1 += decimal.toString(2).slice(0, -6).padStart(5, '0');
+            print_step(`${binary1} ${binary2} (needs 2 bytes)`)
+            print_step(`Byte 1: 110xxxxx → ${binary1}`);
+            print_step(`Byte 2: 10xxxxxx → ${binary2}`);
+
+
+            //convert binary to hex
+            result = parseInt(binary1+binary2,2).toString(16).toUpperCase();
+            print_step(`Convert ${(binary1+binary2).split("").reverse().join("").match(/.{1,4}/g).join(' ').split("").reverse().join("")} back to hex: ${result.padStart(4, '0') }`);
+            return result;
+
+        case decimal <= 0xFFFF:
+            //needs 3 bytes
+            binary1 = '1110';
+            binary2 = '10';
+            binary3 = '10';
+            
+
+            //binary3 gets lower 6 bits
+            binary3 += decimal.toString(2).slice(-6).padStart(6, '0');
+
+            //binary2 gets middle 6 bits
+            binary2 += decimal.toString(2).slice(-12, -6).padStart(6, '0');
+
+            //binary1 gets upper 4 bits
+            binary1 += decimal.toString(2).slice(0, -12).padStart(4, '0');
+            print_step(`${binary1} ${binary2} ${binary3} (needs 3 bytes)`)
+            print_step(`Byte 1: 1110xxxx → ${binary1}`);
+            print_step(`Byte 2: 10xxxxxx → ${binary2}`);
+            print_step(`Byte 3: 10xxxxxx → ${binary3}`);
+
+            //convert binary to hex
+            result = parseInt(binary1+binary2+binary3,2);
+            result = result.toString(16).toUpperCase();
+            print_step(`Convert ${(binary1+binary2+binary3).split("").reverse().join("").match(/.{1,4}/g).join(' ').split("").reverse().join("")} back to hex: ${result.padStart(4, '0')}`);
+            
+            return result;
+
+        case decimal <= 0x10FFFF:
+            binary1 = '11110';
+            binary2, binary3 = '10';
+            binary4 = '10';
+            
+
+            //binary4 gets lower 6 bits
+            binary4 += decimal.toString(2).slice(-6).padStart(6, '0');
+
+            //binary3 gets 2nd 6 bits
+            binary3 += decimal.toString(2).slice(-12, -6).padStart(6, '0');
+
+            //binary2 gets 3rd 6 bits
+            binary2 += decimal.toString(2).slice(-18, -12).padStart(6, '0');
+
+            //binary1 gets upper 3 bits
+            binary1 += decimal.toString(2).slice(0, -18).padStart(3, '0');
+            print_step(`${binary1} ${binary2} ${binary3} ${binary4} (needs 4 bytes)`)
+            print_step(`Byte 1: 11110xxx → ${binary1}`);
+            print_step(`Byte 2: 10xxxxxx → ${binary2}`);
+            print_step(`Byte 3: 10xxxxxx → ${binary3}`);
+            print_step(`Byte 4: 10xxxxxx → ${binary4}`);
+
+            //convert binary to hex
+            result = parseInt(binary1+binary2+binary3+binary4,2);
+            result = result.toString(16).toUpperCase();
+            print_step(`Convert ${(binary1+binary2+binary3+binary4).split("").reverse().join("").match(/.{1,4}/g).join(' ').split("").reverse().join("")} back to hex: ${result.padStart(4, '0')}`);
+
+            return result;
+        default:
+            return "Invalid Input";
+        
+    }
+    
 }
 
 function utf16(unicode){
@@ -146,8 +247,6 @@ function utf16(unicode){
         print_step("Represent as is: "+unicode);
         return unicode;
     } else {
-        //do the crazy stuff
-        //STEP 1: subtract 0x10000
         let hex = decimal - 0x10000;
         print_step(`Subtract 0x10000 from ${unicode}: ` + hex.toString(16).toUpperCase());
 
@@ -175,8 +274,8 @@ function utf16(unicode){
         print_step(`Add 0xDC00 to the low value: ${low_hex.toString(16).toUpperCase()}`);
 
         let result = high_hex.toString(16).toUpperCase().padStart(4, '0') + ' ' + low_hex.toString(16).toUpperCase().padStart(4, '0') ;
-
         print_step(`Concatenate the high and low values: ${result}`);
+
         return result;
     }
 
