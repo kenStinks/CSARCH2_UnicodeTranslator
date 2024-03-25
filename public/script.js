@@ -3,13 +3,18 @@ $(document).ready(function(){
     console.log('script.js is loaded');
     
     const button = $('#translate_button');
+    const save = $('#export_button');
+
     const input_select = $('#input_type');
+    const input_box = $('#input_text');
+
     const output_select = $('#output_type');
+    const output_box = $('#output_text');
 
     button.on('click', function(){
         console.log('button clicked');
         const input_type = input_select.val();
-        const input_text = $('#input_text').val();
+        const input_text = input_box.val();
         const output_type = output_select.val();
 
         console.log(input_type);
@@ -24,14 +29,34 @@ $(document).ready(function(){
         if(input_type == 'unicode' && output_type.startsWith('utf')){
             console.log('converting unicode to ' + output_type);
             const result = convert(input_text, output_type);
-            $('#output_text').val(result);
+            output_box.val(result);
         }  else if(input_type.startsWith('utf') && output_type == 'unicode'){
             console.log('translating ' + input_type + ' to unicode');
             const result = translate(input_type, input_text);
-            //$('#output_text').val(result);
+            //output_box.val(result);
         } else {
             console.log('invalid input/output types');
         }
+    });
+
+    //save output
+    save.on('click', function(){
+        
+
+        var pom = document.createElement('a');
+
+        output = input_select.val() +': '+input_box.val() + ' → ' + output_select.val() +': ' + output_box.val();
+        console.log(output);
+
+        pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(output));
+        pom.setAttribute('download', 'ouput.txt');
+
+        pom.style.display = 'none';
+        document.body.appendChild(pom);
+
+        pom.click();
+
+        document.body.removeChild(pom);
     });
 
     //change available output type options based on selected input type
@@ -55,11 +80,11 @@ $(document).ready(function(){
             }
         });
 
+        output_box.val('');
     });
 
     //run the above function on startup.
     input_select.trigger('change');
-    
 });
 
 function clear_steps(){

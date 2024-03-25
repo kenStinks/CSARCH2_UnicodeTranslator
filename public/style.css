@@ -46,14 +46,34 @@ input{
     display: flex;
     width: auto;
     font-family: inherit;
-    resize: none;
 
     background-color: transparent;
     outline: none;
     border: none;
 
+    font-size: 20px;
+    text-transform: uppercase;
+
+    overflow: hidden;
+}
+
+.text_area{
+    display: flex;
+    width: auto;
+    font-family: inherit;
     padding: 4px 8px;
     font-size: 20px;
+
+    align-items: center;
+}
+
+.unicode_prefix{
+    display: none;
+    color: rgb(90, 90, 90);
+}
+
+select:has(option[value='unicode']:checked) + .text_area > .unicode_prefix{
+    display: block;
 }
 
 h1, h2{
@@ -136,6 +156,7 @@ hr{
 .arrow{
     position: relative;
     bottom:-8px;
+    cursor: default;
 }
 
 .button_container{

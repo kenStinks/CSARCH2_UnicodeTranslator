@@ -22,13 +22,17 @@
                 <div class="translation_box">
                     
                     <select name="input_type" id="input_type">
-                        <option value="unicode" selected="selected">Unicode</option>
+                        <option value="unicode">Unicode</option>
                         <option value="utf_8">UTF-8</option>
                         <option value="utf_16">UTF-16</option>
                         <option value="utf_32">UTF-32</option>
                     </select>
                     
-                    <input type="text" id="input_text" value="blah blah blah">
+                    <div class="text_area">
+                        <span class="unicode_prefix">U+</span>
+                        <input type="text" id="input_text" value="">
+                    </div>
+                    
                 </div>
     
                 <span class="arrow">→</span>
@@ -42,7 +46,11 @@
                         <option value="utf_32">UTF-32</option>
                     </select>
                     
-                    <input type="text" id="output_text" disabled value="stuff stuff stuff">
+                    <div class="text_area">
+                        <span class="unicode_prefix">U+</span>
+                        <input type="text" id="output_text" disabled value="">
+                    </div>
+                    
                 </div>
     
             </div>
