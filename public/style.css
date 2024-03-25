@@ -153,6 +153,16 @@ hr{
     outline: black solid 1px;
 }
 
+.step_container{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.step_container:has(ol:empty){
+    display: none;
+}
+
 .arrow{
     position: relative;
     bottom:-8px;
@@ -161,7 +171,7 @@ hr{
 
 .button_container{
     display: flex;
-    gap: 5px;
+    gap: 10px;
     width: fit-content;
 }
 

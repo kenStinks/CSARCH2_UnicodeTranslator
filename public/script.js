@@ -204,7 +204,7 @@ function utf8(unicode){
     }
 
     //then the first byte
-    byte_mask = (first_byte<<1).toString(2);
+    byte_mask = (first_byte<<1).toString(2).slice(0, 4);
     while(byte_mask.length < 4) byte_mask+='x';
 
     first_byte <<= 8-n;
