@@ -97,23 +97,96 @@ function print_step(str){
 }
 
 function convert(unicode, utf_type){
-    //insert code
-
     //check if input is valid
-    let regex = /^[0-9a-f]+$/i;
+    unicode = unicode.replace(/\s/g, '');
+    let regex = /^[0-9a-f]+$/i; //ensures hex input
 
     if(!regex.test(unicode)){
-        return "Invalid Input.";
+        clear_steps();
+        return "Invalid Input";
+    }
+
+    //tests if unicode is in valid range
+    let decimal = parseInt(unicode, 16);
+    if(decimal < 0 || decimal > 0x10FFFF){
+        clear_steps();
+        return "Invalid Input";
     }
 
     unicode = unicode.toUpperCase(); //make unicode string uppercase
 
     clear_steps();
     print_step('Input Unicode: '+unicode);
-
-    return "Valid Input";
+    
+    switch(utf_type){
+        case 'utf_8':
+            return utf8(unicode);
+        case 'utf_16':
+            return utf16(unicode);
+        case 'utf_32':
+            return utf32(unicode);
+        default:
+            return -1;
+    }
 }
 
-function translate(utf_type, utf) {
-    //insert code
+//functions for converting Unicode to UTF
+function utf8(unicode){
+    //convert unicode to utf8
+    unicode = "utf8 Not implemented yet!"
+
+    return unicode;
+}
+
+function utf16(unicode){
+    //convert unicode to utf16
+    let decimal = parseInt(unicode, 16);
+    if (decimal <= 0xffff){
+        //represent as is
+        print_step("Represent as is: "+unicode);
+        return unicode;
+    } else {
+        //do the crazy stuff
+        //STEP 1: subtract 0x10000
+        let hex = decimal - 0x10000;
+        print_step(`Subtract 0x10000 from ${unicode}: ` + hex.toString(16).toUpperCase());
+
+        let binary = hex.toString(2);
+        binary = binary.padStart(20, '0');
+
+        print_step(`Convert to binary: ${binary.match(/.{1,4}/g).join(' ')}`); //added spaces for readability
+
+        let high = binary.slice(0, 10);
+        let low = binary.slice(10);
+
+        print_step(`Split the binary into high and low values: ${high} (high) | ${low} (low)`);
+
+        console.log(binary)
+        let high_hex = Math.floor(hex / 0x400);
+        let low_hex = hex % 0x400;
+
+        print_step(`Convert the high split to hex: ${high_hex.toString(16).toUpperCase().padStart(4, '0')}`);
+        print_step(`Convert the low split to hex: ${low_hex.toString(16).toUpperCase().padStart(4, '0')}`);
+
+        high_hex +=0xD800;
+        low_hex +=0xDC00;
+
+        print_step(`Add 0xD800 to the high value: ${high_hex.toString(16).toUpperCase()}`);
+        print_step(`Add 0xDC00 to the low value: ${low_hex.toString(16).toUpperCase()}`);
+
+        let result = high_hex.toString(16).toUpperCase().padStart(4, '0') + ' ' + low_hex.toString(16).toUpperCase().padStart(4, '0') ;
+
+        print_step(`Concatenate the high and low values: ${result}`);
+        return result;
+    }
+
+}
+
+function utf32(unicode){
+    //zero-extend unicode to 8 digits
+    unicode = unicode.padStart(8, '0');
+    unicode = unicode.match(/.{1,4}/g).join(' ');
+
+    print_step("Zero-extend to 8 hex digits: "+unicode);
+    return unicode;
 }
