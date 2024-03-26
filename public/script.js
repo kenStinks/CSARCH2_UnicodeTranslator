@@ -110,6 +110,8 @@ $(document).ready(function(){
 
         output_select.val(input_type);
         output_box.val(input_text);
+
+        input_select.trigger('change'); //update options
     });
 
 });
@@ -235,7 +237,7 @@ function uni_to_utf8(unicode){
     res = dec_to_bin(first_byte)+" "+ res;
     hex = dec_to_hex(first_byte)+" "+ hex;
 
-    print_step(`Full: ${res}`);
+    print_step(`Final Answer: ${res}`);
     print_step(`Convert back to hex → ${hex}`);
     
     return hex;
@@ -247,7 +249,7 @@ function uni_to_utf16(unicode){
     if (decimal <= 0xffff){
         //represent as is
         print_step(`0000 <= ${unicode} <= FFFF : Represent as is.`);
-        print_step("Final: "+dec_to_hex(decimal));
+        print_step("Final Answer: "+dec_to_hex(decimal));
         return dec_to_hex(decimal);
     } else {
         decimal -= 0x10000;
@@ -287,7 +289,6 @@ function uni_to_utf32(unicode){
 }
 
 //TRANSLATION
-
 function translate(hex, utf_type){
     clear_steps();
     print_step('Input Hex: '+hex);
@@ -353,7 +354,7 @@ function utf8_to_uni(hex){
     }
 
     result = bin_to_hex(result);
-    print_step(`Final: ${result}`);
+    print_step(`Final Answer: ${result}`);
     print_step(`Convert to hex → ${result}`);
     return result;
 }
@@ -361,7 +362,53 @@ function utf8_to_uni(hex){
 
 
 function utf16_to_uni(hex){
-    return 0;
+    var decimal = hex_to_dec(hex);
+
+    if(decimal <= 0xFFFF){
+        print_step(`0000 <= ${hex} <= FFFF: Represent as is.`);
+        print_step(`Final Answer: ${hex}`);
+        return hex
+    }
+
+    hex = hex.padStart(8,'0');
+    print_step(`10000 <= ${hex} <= 10FFFF.`);
+
+    var high = hex.slice(0,4);
+    var low = hex.slice(4,8);
+    print_step(`Split to 2-byte segments → ${high}(high) | ${low}(low)`);
+
+    high = hex_to_dec(high);
+    low = hex_to_dec(low);
+
+    //check if high/low are in a valid range
+    if(high < 0xD800 || high > 0xDBFF){
+        return 'Invalid Input'
+    }
+
+    if(low < 0xDC00 || low > 0xDFFF){
+        return 'Invalid Input'
+    }
+
+    high -= 0xD800;
+    low -= 0xDC00;
+
+    print_step(`Subtract D800 from the high value: ${dec_to_hex(high)}`);
+    print_step(`Subtract DC00 from the low value: ${dec_to_hex(low)}`);
+
+    print_step(`Convert high value to binary → ${dec_to_bin(high)}`);
+    print_step(`Convert low value to binary → ${dec_to_bin(low)}`);
+
+    var result = (high << 10) + low;
+
+    print_step(`Combine: ${dec_to_bin(result)}`);
+    
+
+    print_step(`Convert back to hex → ${dec_to_hex(result)}`);
+
+    result = dec_to_hex(result+0x10000);
+    print_step(`Add 10000: ${result}`);
+
+    return result.replace(/^0+/, '').replace(/\s/g, '');
 }
 
 function utf32_to_uni(hex){
@@ -370,7 +417,7 @@ function utf32_to_uni(hex){
     if(decimal < 0 || decimal > 0x10FFFF){
         return "Input Out of Range";
     }
-    var result = hex.replace(/^0+/, '');;
+    var result = hex.replace(/^0+/, '');
     print_step(`Remove leading zeros: ${result}`);
     return result;
 }
