@@ -145,6 +145,10 @@ function dec_to_hex(x){
     return n.match(/.{1,2}/g).join(' ').toUpperCase();
 }
 
+function hex_to_dec(x){
+    return parseInt(x, 16);
+}
+
 //CONVERSION
 function convert(unicode, utf_type){
 
@@ -168,10 +172,6 @@ function convert(unicode, utf_type){
         default:
             return -1;
     }
-}
-
-function hex_to_dec(x){
-    return parseInt(x, 16);
 }
 
 //functions for converting Unicode to UTF
@@ -230,7 +230,7 @@ function uni_to_utf8(unicode){
     while(byte_mask.length < 4) byte_mask+='x';
 
     first_byte <<= 8-n;
-    first_byte += first_byte>>(6*(n-1));
+    first_byte += decimal>>(6*(n-1));
     print_step(`Byte 1: ${byte_mask} xxxx → ${dec_to_bin(first_byte)}`);
 
     res = dec_to_bin(first_byte)+" "+ res;
@@ -305,9 +305,61 @@ function translate(hex, utf_type){
     }
 }
 
-function utf8_to_uni(hex){
-    return 0;
+function bin_to_hex(bin){
+    return parseInt(bin,2).toString(16).toUpperCase();
 }
+
+function utf8_to_uni(hex){
+    var decimal = hex_to_dec(hex);
+    var binary = decimal.toString(2);
+    while(binary.length%8 != 0) {
+        binary = "0" + binary;
+    }
+
+    print_step(`Convert to 8-bit binary: ${binary}`);
+
+    re_1 = /^0[0-1]{7}$/g; //valid 1 byte
+    re_2 = /^110[0-1]{5}10[0-1]{6}$/g; //valid 2 bytes
+    re_3 = /^1110[0-1]{4}(10[0-1]{6}){2}$/g //valid 3 bytes
+    re_4 = /^11110[0-1]{3}(10[0-1]{6}){3}$/g //valid 4 bytes
+
+    if (binary.match(re_1)){
+        print_step(`1 byte needed, leave as is: ${dec_to_hex(decimal)}`);
+        return dec_to_hex(decimal);
+    }
+
+    var n = -1;
+
+    if (binary.match(re_2)){
+        print_step(`2 bytes needed, remove header bits.`);
+        n=2;
+    }
+
+    if (binary.match(re_3)){
+        print_step(`3 bytes needed, remove header bits.`);
+        n=3;
+    }
+
+    if (binary.match(re_4)){
+        print_step(`4 bytes needed, remove header bits.`);
+        n=4;
+    }
+
+    if (n==-1) return 'Invalid Value';
+
+    var result = binary.slice(n+1,8);
+
+    for(let i=1;i<n;i++){
+        result += binary.slice(i*8+2,i*8+8);
+    }
+
+    result = bin_to_hex(result);
+    print_step(`Final: ${result}`);
+    print_step(`Convert to hex → ${result}`);
+    return result;
+}
+
+
 
 function utf16_to_uni(hex){
     return 0;
