@@ -152,15 +152,14 @@ function hex_to_dec(x){
 //CONVERSION
 function convert(unicode, utf_type){
 
+    clear_steps();
+    print_step('Input Unicode: '+unicode);
+
     //tests if unicode is in valid range
     const decimal = parseInt(unicode, 16);
     if(decimal < 0 || decimal > 0x10FFFF){
-        clear_steps();
         return "Input Out of Range";
     }
-
-    clear_steps();
-    print_step('Input Unicode: '+unicode);
     
     switch(utf_type){
         case 'utf_8':
@@ -366,6 +365,11 @@ function utf16_to_uni(hex){
 }
 
 function utf32_to_uni(hex){
+    var decimal = hex_to_dec(hex);
+
+    if(decimal < 0 || decimal > 0x10FFFF){
+        return "Input Out of Range";
+    }
     var result = hex.replace(/^0+/, '');;
     print_step(`Remove leading zeros: ${result}`);
     return result;
