@@ -112,6 +112,7 @@ $(document).ready(function(){
         output_box.val(input_text);
 
         input_select.trigger('change'); //update options
+        button.trigger('click');
     });
 
 });
