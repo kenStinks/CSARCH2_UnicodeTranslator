@@ -4,6 +4,7 @@ $(document).ready(function(){
     
     const button = $('#translate_button');
     const save = $('#export_button');
+    const flip = $('#arrow');
 
     const input_select = $('#input_type');
     const input_box = $('#input_text');
@@ -13,9 +14,9 @@ $(document).ready(function(){
 
     button.on('click', function(){
         console.log('button clicked');
-        const input_type = input_select.val();
-        const input_text = input_box.val();
-        const output_type = output_select.val();
+        var input_type = input_select.val();
+        var input_text = input_box.val();
+        var output_type = output_select.val();
 
         console.log(input_type);
         console.log(input_text);
@@ -23,6 +24,18 @@ $(document).ready(function(){
 
         //validate inputs first before converting
         
+        //check if input is valid
+        input_text = input_text.replace(/\s/g, ''); //remove spaces
+        const regex = /^[0-9a-f]+$/i; //ensures hex input
+
+        if(!regex.test(input_text)){
+            clear_steps();
+            output_box.val('Invalid Input');
+            return;
+        }
+
+        input_text = input_text.toUpperCase(); //make hex string uppercase
+
         //after validating, this is where we call our functions that convert/translate Unicode/UTF
         //based on the input and output types
 
@@ -32,8 +45,8 @@ $(document).ready(function(){
             output_box.val(result);
         }  else if(input_type.startsWith('utf') && output_type == 'unicode'){
             console.log('translating ' + input_type + ' to unicode');
-            const result = translate(input_type, input_text);
-            //output_box.val(result);
+            const result = translate(input_text, input_type);
+            output_box.val(result);
         } else {
             console.log('invalid input/output types');
         }
@@ -85,7 +98,23 @@ $(document).ready(function(){
 
     //run the above function on startup.
     input_select.trigger('change');
+
+    flip.on('click', function(){
+        var input_type = input_select.val();
+        var input_text = input_box.val();
+        var output_type = output_select.val();
+        var output_text = output_box.val();
+
+        input_select.val(output_type);
+        input_box.val(output_text);
+
+        output_select.val(input_type);
+        output_box.val(input_text);
+    });
+
 });
+
+//HELPER FUNCTIONS
 
 function clear_steps(){
     $('#step_list').empty()
@@ -94,41 +123,6 @@ function clear_steps(){
 function print_step(str){
     var step = $("<li></li>").text(str); 
     $('#step_list').append(step);
-}
-
-function convert(unicode, utf_type){
-    //check if input is valid
-    unicode = unicode.replace(/\s/g, '');
-    const regex = /^[0-9a-f]+$/i; //ensures hex input
-
-    if(!regex.test(unicode)){
-        clear_steps();
-        return "Invalid Input";
-    }
-
-    //tests if unicode is in valid range
-    const decimal = parseInt(unicode, 16);
-    if(decimal < 0 || decimal > 0x10FFFF){
-        clear_steps();
-        return "Invalid Input";
-    }
-
-    while(unicode.length%2 != 0)unicode = "0" + unicode; //this is just aesthetics
-    unicode = unicode.toUpperCase(); //make unicode string uppercase
-
-    clear_steps();
-    print_step('Input Unicode: '+unicode);
-    
-    switch(utf_type){
-        case 'utf_8':
-            return utf8(unicode);
-        case 'utf_16':
-            return utf16(unicode);
-        case 'utf_32':
-            return utf32(unicode);
-        default:
-            return -1;
-    }
 }
 
 function dec_to_bin(x){
@@ -142,7 +136,38 @@ function dec_to_bin(x){
 }
 
 function dec_to_hex(x){
-    return x.toString(16).toUpperCase();
+    var n = x.toString(16)
+
+    while(n.length%2 != 0) {
+        n = "0" + n;
+    }
+
+    return n.match(/.{1,2}/g).join(' ').toUpperCase();
+}
+
+//CONVERSION
+function convert(unicode, utf_type){
+
+    //tests if unicode is in valid range
+    const decimal = parseInt(unicode, 16);
+    if(decimal < 0 || decimal > 0x10FFFF){
+        clear_steps();
+        return "Input Out of Range";
+    }
+
+    clear_steps();
+    print_step('Input Unicode: '+unicode);
+    
+    switch(utf_type){
+        case 'utf_8':
+            return uni_to_utf8(unicode);
+        case 'utf_16':
+            return uni_to_utf16(unicode);
+        case 'utf_32':
+            return uni_to_utf32(unicode);
+        default:
+            return -1;
+    }
 }
 
 function hex_to_dec(x){
@@ -150,7 +175,7 @@ function hex_to_dec(x){
 }
 
 //functions for converting Unicode to UTF
-function utf8(unicode){
+function uni_to_utf8(unicode){
     //convert unicode to utf8
     
     //convert to decimal
@@ -158,9 +183,6 @@ function utf8(unicode){
 
     console.log("decimal: "+decimal+" | packed bcd: " + dec_to_bin(decimal));
     
-    //Determine if within range.
-    if(decimal > 0x10FFFF) return "Invalid Input";
-
     //if 1 byte is needed, leave as is.
     if (decimal <= 0x007F){
         print_step(`0000 <= ${unicode} <= 007F : needs 1 byte`);
@@ -220,41 +242,35 @@ function utf8(unicode){
     return hex;
 }
 
-function utf16(unicode){
+function uni_to_utf16(unicode){
     //convert unicode to utf16
-    let decimal = parseInt(unicode, 16);
+    let decimal = hex_to_dec(unicode);
     if (decimal <= 0xffff){
         //represent as is
-        print_step("Represent as is: "+unicode);
-        return unicode;
+        print_step(`0000 <= ${unicode} <= FFFF : Represent as is.`);
+        print_step("Final: "+dec_to_hex(decimal));
+        return dec_to_hex(decimal);
     } else {
-        let hex = decimal - 0x10000;
-        print_step(`Subtract 0x10000 from ${unicode}: ` + hex.toString(16).toUpperCase());
+        decimal -= 0x10000;
+        print_step(`Subtract 10000 from ${unicode}: ` + dec_to_hex(decimal));
 
-        let binary = hex.toString(2);
-        binary = binary.padStart(20, '0');
+        print_step(`Convert to binary: ${dec_to_bin(decimal)}`); 
 
-        print_step(`Convert to binary: ${binary.match(/.{1,4}/g).join(' ')}`); //added spaces for readability
+        let high = (decimal >> 10) & 0b1111111111;
+        let low = decimal & 0b1111111111;
 
-        let high = binary.slice(0, 10);
-        let low = binary.slice(10);
+        print_step(`Split the binary into high and low values: ${dec_to_bin(high)} | ${dec_to_bin(low)}`);
 
-        print_step(`Split the binary into high and low values: ${high} (high) | ${low} (low)`);
+        print_step(`Convert the high split to hex: ${dec_to_hex(high)}`);
+        print_step(`Convert the low split to hex: ${dec_to_hex(low)}`);
 
-        console.log(binary)
-        let high_hex = Math.floor(hex / 0x400);
-        let low_hex = hex % 0x400;
+        high +=0xD800;
+        low +=0xDC00;
 
-        print_step(`Convert the high split to hex: ${high_hex.toString(16).toUpperCase().padStart(4, '0')}`);
-        print_step(`Convert the low split to hex: ${low_hex.toString(16).toUpperCase().padStart(4, '0')}`);
+        print_step(`Add D800 to the high value: ${dec_to_hex(high)}`);
+        print_step(`Add DC00 to the low value:  ${dec_to_hex(low)}`);
 
-        high_hex +=0xD800;
-        low_hex +=0xDC00;
-
-        print_step(`Add 0xD800 to the high value: ${high_hex.toString(16).toUpperCase()}`);
-        print_step(`Add 0xDC00 to the low value: ${low_hex.toString(16).toUpperCase()}`);
-
-        let result = high_hex.toString(16).toUpperCase().padStart(4, '0') + ' ' + low_hex.toString(16).toUpperCase().padStart(4, '0') ;
+        let result = dec_to_hex(high) + ' ' + dec_to_hex(low);
         print_step(`Concatenate the high and low values: ${result}`);
 
         return result;
@@ -262,11 +278,43 @@ function utf16(unicode){
 
 }
 
-function utf32(unicode){
+function uni_to_utf32(unicode){
     //zero-extend unicode to 8 digits
     unicode = unicode.padStart(8, '0');
-    unicode = unicode.match(/.{1,4}/g).join(' ');
+    unicode = unicode.match(/.{1,2}/g).join(' ');
 
     print_step("Zero-extend to 8 hex digits: "+unicode);
     return unicode;
+}
+
+//TRANSLATION
+
+function translate(hex, utf_type){
+    clear_steps();
+    print_step('Input Hex: '+hex);
+    
+    switch(utf_type){
+        case 'utf_8':
+            return utf8_to_uni(hex);
+        case 'utf_16':
+            return utf16_to_uni(hex);
+        case 'utf_32':
+            return utf32_to_uni(hex);
+        default:
+            return -1;
+    }
+}
+
+function utf8_to_uni(hex){
+    return 0;
+}
+
+function utf16_to_uni(hex){
+    return 0;
+}
+
+function utf32_to_uni(hex){
+    var result = hex.replace(/^0+/, '');;
+    print_step(`Remove leading zeros: ${result}`);
+    return result;
 }

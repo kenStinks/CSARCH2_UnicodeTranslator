@@ -163,10 +163,16 @@ hr{
     display: none;
 }
 
-.arrow{
+#arrow{
     position: relative;
     bottom:-8px;
-    cursor: default;
+    cursor: pointer;
+    background-color: transparent;
+    outline: none;
+    border: none;
+
+    font-size: 20px;
+    
 }
 
 .button_container{
