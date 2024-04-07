@@ -23,7 +23,7 @@ Input and output types can be selected in the `dropdown` directly above. Output 
 
  Hit the `translate` button to confirm and the output will apear with the correct translation.
 
- A `Save as .txt` button is also included to allow for saving the current input-output.
+ A `Save as .txt` button is also included to allow for saving the current input-output and steps.
 
  ![](/public/images/buttons.png)
 
