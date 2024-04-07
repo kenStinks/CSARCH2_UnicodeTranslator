@@ -58,7 +58,19 @@ $(document).ready(function(){
 
         var pom = document.createElement('a');
 
-        output = input_select.val() +': '+input_box.val() + ' → ' + output_select.val() +': ' + output_box.val();
+        //output = input_select.val() +': '+input_box.val() + ' → ' + output_select.val() +': ' + output_box.val();
+        output = `${input_box.val()}: ${input_select.val()} → ${output_select.val()}: ${output_box.val()}`
+        var stepList = $('#step_list > li')
+
+        if (stepList.length > 0){
+            output += `\n\nSteps:\n`
+
+            stepList.each(function(i) {
+                output += `${i+1}. ${$(this).text()}\n`
+            })
+        }
+
+
         console.log(output);
 
         pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(output));
@@ -346,7 +358,10 @@ function utf8_to_uni(hex){
         n=4;
     }
 
-    if (n==-1) return 'Invalid Value';
+    if (n==-1) {
+        print_step(`ERROR: Input is invalid`);
+        return 'Invalid input';
+    }
 
     var result = binary.slice(n+1,8);
 
@@ -383,11 +398,13 @@ function utf16_to_uni(hex){
 
     //check if high/low are in a valid range
     if(high < 0xD800 || high > 0xDBFF){
-        return 'Invalid Input'
+        print_step(`ERROR: Input is invalid`);
+        return 'Invalid input';
     }
 
     if(low < 0xDC00 || low > 0xDFFF){
-        return 'Invalid Input'
+        print_step(`ERROR: Input is invalid`);
+        return 'Invalid input';
     }
 
     high -= 0xD800;
