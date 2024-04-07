@@ -21,6 +21,10 @@ Input and output types can be selected in the `dropdown` directly above. Output 
 
 ![](/public/images/inputtype.png)
 
+Clicking on the arrow between the boxes will swap the input and output, also showing the correct steps.
+
+![](/public/images/switchbutton.png)
+
  Hit the `translate` button to confirm and the output will apear with the correct translation.
 
  A `Save as .txt` button is also included to allow for saving the current input-output and steps.
